@@ -24,8 +24,8 @@ an empty string is printed instead.
 
 : :
 
-    >> > say_my_name("Brennan")
-    My name is Brennan
+    >> > say_my_name("Youssef")
+    My name is Youssef
 
 Invalid Names
 == == == == == == =
