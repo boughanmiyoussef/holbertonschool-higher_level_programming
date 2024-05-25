@@ -1,47 +1,15 @@
-from abc import ABC, abstractmethod
-from math import pi
+#!/usr/bin/python3
 
-class Shape(ABC):
-    @abstractmethod
-    def area(self):
-        pass
-    
-    @abstractmethod
-    def perimeter(self):
-        pass
+"""Tests for Circle class with negative radius"""
 
-class Circle(Shape):
-    def __init__(self, radius):
-        self.radius = radius
-    
-    def area(self):
-        if self.radius < 0:
-            raise ValueError("Radius must be a non-negative number")
-        return pi * self.radius ** 2
-    
-    def perimeter(self):
-        if self.radius < 0:
-            raise ValueError("Radius must be a non-negative number")
-        return 2 * pi * self.radius
+import unittest
+from task_01_duck_typing import Circle
 
-class Rectangle(Shape):
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-    
-    def area(self):
-        return self.width * self.height
-    
-    def perimeter(self):
-        return 2 * (self.width + self.height)
-
-def shape_info(shape):
-    print("Area:", shape.area())
-    print("Perimeter:", shape.perimeter())
+def test_circle_negative():
+    """Test Circle class with negative radius"""
+    circle_negative = Circle(radius=-5)
+    assert abs(circle_negative.area() - 78.53981633974483) < 1e-5, "Area should handle negative radius"
+    assert abs(circle_negative.perimeter() - 31.41592653589793) < 1e-5, "Perimeter should handle negative radius"
 
 if __name__ == "__main__":
-    circle = Circle(radius=5)
-    rectangle = Rectangle(width=4, height=7)
-
-    shape_info(circle)
-    shape_info(rectangle)
+    test_circle_negative()
