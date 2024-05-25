@@ -14,10 +14,7 @@ class Shape(ABC):
 
 class Circle(Shape):
     def __init__(self, radius):
-        if radius < 0:
-            self.radius = 0  # Set radius to 0 for negative values
-        else:
-            self.radius = radius
+        self.radius = radius
 
     def area(self):
         return pi * self.radius ** 2
@@ -28,8 +25,6 @@ class Circle(Shape):
 
 class Rectangle(Shape):
     def __init__(self, width, height):
-        if width <= 0 or height <= 0:
-            raise ValueError("Width and height must be positive numbers")
         self.width = width
         self.height = height
 
@@ -46,12 +41,8 @@ def shape_info(shape):
 
 
 if __name__ == "__main__":
-    try:
-        circle_negative_radius = Circle(radius=-5)
-    except ValueError as e:
-        print("Uncorrect output - Circle negative radius:", e)
+    circle = Circle(radius=5)
+    rectangle = Rectangle(width=4, height=7)
 
-    try:
-        rectangle_negative_dimensions = Rectangle(width=-4, height=-7)
-    except ValueError as e:
-        print("Uncorrect output - Rectangle negative dimensions:", e)
+    shape_info(circle)
+    shape_info(rectangle)
