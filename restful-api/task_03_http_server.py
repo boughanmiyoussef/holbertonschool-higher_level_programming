@@ -1,15 +1,15 @@
 #!/usr/bin/python3
 """
-This script sets up a basic HTTP server using the http.server module in Python's standard library.
+HTTP Server with Python
 """
 
-from http.server import BaseHTTPRequestHandler, HTTPServer
+import http.server
 import json
 
 
-class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     """
-    Handles HTTP requests.
+    Simple HTTP request handler
     """
 
     def do_GET(self):
@@ -42,12 +42,13 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(b'Endpoint not found')
 
 
-def run():
+def run(server_class=http.server.HTTPServer,
+        handler_class=SimpleHTTPRequestHandler):
     """
-    Runs the HTTP server.
+    Main function to run the server.
     """
     server_address = ('', 8000)
-    httpd = HTTPServer(server_address, SimpleHTTPRequestHandler)
+    httpd = server_class(server_address, handler_class)
     print('Starting server...')
     httpd.serve_forever()
 
