@@ -13,7 +13,9 @@ def home():
 
 @app.route('/data', methods=['GET'])
 def get_data():
-    return jsonify(list(users.keys()))
+    if not users:
+        return jsonify([]), 200
+    return jsonify(list(users.keys())), 200
 
 @app.route('/status', methods=['GET'])
 def status():
