@@ -1,81 +1,65 @@
 import unittest
-import json
-from task_04_flask import app
-
+import requests
 
 class TestFlaskAPI(unittest.TestCase):
+
+    base_url = "http://127.0.0.1:5000"
+
     def test_home_route(self):
-        client = app.test_client()
-        response = client.get('/')
+        response = requests.get(f"{self.base_url}/")
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.data.decode('utf-8'),
-            'Welcome to the Flask API!')
+        self.assertEqual(response.text, "Welcome to the Flask API!")
 
-    def test_data_route(self):
-        client = app.test_client()
-        response = client.get('/data')
+    def test_get_data_no_users(self):
+        # Clear users for this test
+        requests.post(f"{self.base_url}/clear_users")
+        response = requests.get(f"{self.base_url}/data")
         self.assertEqual(response.status_code, 200)
-        data = json.loads(response.data)
-        self.assertIsInstance(data, list)
-
-    def test_status_route(self):
-        client = app.test_client()
-        response = client.get('/status')
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.data.decode('utf-8'), 'OK')
-
-    def test_get_user(self):
-        client = app.test_client()
-        response = client.get('/users/john')
-        self.assertEqual(response.status_code, 200)
-        data = json.loads(response.data)
-        self.assertEqual(data['username'], 'john')
-
-    def test_get_nonexistent_user(self):
-        client = app.test_client()
-        response = client.get('/users/nonexistent')
-        self.assertEqual(response.status_code, 404)
-        data = json.loads(response.data)
-        self.assertEqual(data['error'], 'User not found')
+        self.assertEqual(response.json(), [])
 
     def test_add_user(self):
-        client = app.test_client()
-        new_user_data = {
-            'username': 'alice',
-            'name': 'Alice',
-            'age': 25,
-            'city': 'San Francisco'
-        }
-        response = client.post('/add_user', json=new_user_data)
+        user = {"username": "alice", "name": "Alice", "age": 25, "city": "Seattle"}
+        response = requests.post(f"{self.base_url}/add_user", json=user)
         self.assertEqual(response.status_code, 201)
-        data = json.loads(response.data)
-        self.assertEqual(data['message'], 'User added')
-        self.assertEqual(data['user']['username'], 'alice')
+        self.assertEqual(response.json()["user"], user)
 
-    def test_add_user_no_username(self):
-        client = app.test_client()
-        new_user_data = {
-            'name': 'Alice',
-            'age': 25,
-            'city': 'San Francisco'
-        }
-        response = client.post('/add_user', json=new_user_data)
+    def test_get_data_after_adding_user(self):
+        user = {"username": "bob", "name": "Bob", "age": 32, "city": "Chicago"}
+        requests.post(f"{self.base_url}/add_user", json=user)
+        response = requests.get(f"{self.base_url}/data")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("bob", response.json())
+
+    def test_get_user(self):
+        # Ensure the user "john" is added before testing
+        user = {"username": "john", "name": "John", "age": 30, "city": "New York"}
+        requests.post(f"{self.base_url}/add_user", json=user)
+        response = requests.get(f"{self.base_url}/users/john")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["username"], "john")
+
+    def test_get_user_not_found(self):
+        response = requests.get(f"{self.base_url}/users/doesnotexist")
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["error"], "User not found")
+
+    def test_status_route(self):
+        response = requests.get(f"{self.base_url}/status")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.text, "OK")
+
+    def test_add_user_without_username(self):
+        user = {"name": "Charlie", "age": 29, "city": "Denver"}
+        response = requests.post(f"{self.base_url}/add_user", json=user)
         self.assertEqual(response.status_code, 400)
-        data = json.loads(response.data)
+        self.assertEqual(response.json()["error"], "Username is required")
 
     def test_add_duplicate_user(self):
-        client = app.test_client()
-        new_user_data = {
-            'username': 'john',
-            'name': 'John',
-            'age': 30,
-            'city': 'New York'
-        }
-        response = client.post('/add_user', json=new_user_data)
-        self.assertEqual(response.status_code, 400)
-        data = json.loads(response.data)
+        user = {"username": "john", "name": "John", "age": 30, "city": "New York"}
+        requests.post(f"{self.base_url}/add_user", json=user)
+        response = requests.post(f"{self.base_url}/add_user", json=user)
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()["error"], "User already exists")
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
