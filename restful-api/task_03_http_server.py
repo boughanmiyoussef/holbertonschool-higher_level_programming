@@ -6,7 +6,6 @@ Simple API using Python's http.server module
 import http.server
 import json
 
-
 class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     """
     Simple HTTP request handler
