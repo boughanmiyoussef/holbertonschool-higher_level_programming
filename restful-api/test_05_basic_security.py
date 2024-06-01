@@ -20,7 +20,7 @@ class TestAPISecurity(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {"message": "Basic Auth: Access Granted"})
 
-    def test_login(self):
+    def log(self):
         response = self.app.post('/login', json={"username": "user1", "password": "password"})
         self.assertEqual(response.status_code, 200)
         self.assertIn("access_token", response.json)
@@ -44,7 +44,7 @@ class TestAPISecurity(unittest.TestCase):
         })
         self.assertEqual(response.status_code, 403)
 
-    def test_admin_only_with_admin_token(self):
+    def admin(self):
         access_token = create_access_token(identity={'username': 'admin1', 'role': 'admin'})
         response = self.app.get('/admin-only', headers={
             'Authorization': 'Bearer ' + access_token

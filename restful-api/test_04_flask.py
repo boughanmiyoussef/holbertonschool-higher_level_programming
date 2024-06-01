@@ -22,7 +22,6 @@ class TestFlaskAPI(unittest.TestCase):
         self.assertEqual(response.json()["user"], user)
 
     def test_get_user(self):
-        # Ensure the user "jane" is added before testing
         user = {"username": "jane", "name": "Jane", "age": 28, "city": "Los Angeles"}
         requests.post(f"{self.base_url}/add_user", json=user)
         response = requests.get(f"{self.base_url}/users/jane")
