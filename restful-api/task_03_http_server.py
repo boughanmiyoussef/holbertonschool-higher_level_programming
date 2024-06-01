@@ -25,11 +25,6 @@ class SimpleServer(http.server.BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/plain')
             self.end_headers()
             self.wfile.write(b"OK")
-        elif self.path == '/':
-            self.send_response(404)
-            self.send_header('Content-type', 'text/plain')
-            self.end_headers()
-            self.wfile.write(b"Endpoint not found")
         else:
             self.send_response(404)
             self.send_header('Content-type', 'text/plain')
