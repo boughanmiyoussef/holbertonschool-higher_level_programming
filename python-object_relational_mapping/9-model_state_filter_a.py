@@ -1,36 +1,22 @@
-
 #!/usr/bin/python3
-"""
-Script that lists all `State` objects that contain
-the letter `a` from the database `hbtn_0e_6_usa`.
-
-Arguments:
-    mysql username (str)
-    mysql password (str)
-    database name (str)
-"""
-
-import sys
-from sqlalchemy import (create_engine)
-from sqlalchemy.orm import Session
-from sqlalchemy.engine.url import URL
-from model_state import Base, State
-
+"""lists all State objects that contain the
+letter a from the database hbtn_0e_6_usa"""
 
 if __name__ == "__main__":
-    mySQL_u = sys.argv[1]
-    mySQL_p = sys.argv[2]
-    db_name = sys.argv[3]
 
-    url = {'drivername': 'mysql+mysqldb', 'host': 'localhost',
-           'username': mySQL_u, 'password': mySQL_p, 'database': db_name}
+    import sys
+    from model_state import Base, State
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import Session
 
-    engine = create_engine(URL(**url), pool_pre_ping=True)
+    engine = create_engine('mysql+mysqldb://{}:{}@localhost/{}'
+                           .format(sys.argv[1], sys.argv[2],
+                                   sys.argv[3]), pool_pre_ping=True)
     Base.metadata.create_all(engine)
 
-    session = Session(bind=engine)
-
-    q = session.query(State).filter(State.name.like('%a%')).order_by(State.id)
-
-    for instance in q:
-        print("{}: {}".format(instance.id, instance.name))
+    session = Session(engine)
+    for state in session.query(State)\
+                        .filter(State.name.like('%a%'))\
+                        .order_by(State.id):
+        print("{}: {}".format(state.id, state.name))
+    session.close()
