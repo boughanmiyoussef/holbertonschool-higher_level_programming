@@ -20,7 +20,7 @@ if __name__ == "__main__":
 
     state_name = sys.argv[4]
 
-    #localhost:3306
+    # localhost:3306
     db = MySQLdb.connect(user=mySQL_u, passwd=mySQL_p, db=db_name)
     cur = db.cursor()
 
